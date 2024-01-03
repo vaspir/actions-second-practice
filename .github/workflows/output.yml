@@ -1,5 +1,9 @@
 name: Output information
-on: [workflow_dispatch, issue_comment]
+on:
+  workflow_dispatch:
+    required: true
+  issue_comment:
+    types: [ created, deleted ]
 jobs:
   info:
     runs-on: ubuntu-latest
