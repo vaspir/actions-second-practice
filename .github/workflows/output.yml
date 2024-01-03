@@ -1,7 +1,7 @@
 name: Output information
 on:
   workflow_dispatch:
-    required: true
+    required: false
   issue_comment:
     types: [ created, deleted ]
 jobs:
