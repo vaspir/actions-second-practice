@@ -9,4 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Output GitHub context
-        run: echo "${{ toJSON(github) }}"
+        run: |
+          echo "Issue comment was created which says:"
+          echo "${{ toJSON(github.event.comment.body) }}"
