@@ -1,0 +1,64 @@
+name: Reuse deploy workflow
+on: [push, workflow_dispatch]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{hashFiles('**/package-lock.json')}}
+      - name: Install Node js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        if: steps.cache.outcome!='true'
+        run: npm ci
+      - name: Run lint
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{hashFiles('**/package-lock.json')}}
+      - name: Install Node js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        if: steps.cache.outcome!='true'
+        run: npm ci
+      - name: Run tests
+        id: run-tests
+        run: npm run test
+      - name: Upload test report
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test.json
+      - name: Build project
+        run: npm run build
+
+  deploy:
+    needs: test
+    uses: ./.github/workflows/reusable.yml
+
+  report:
+    needs: [lint, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Outputs information
+        run: |
+          echo "Output some information"
