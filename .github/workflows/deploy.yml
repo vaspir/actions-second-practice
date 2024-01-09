@@ -43,7 +43,7 @@ jobs:
         id: run-tests
         run: npm run test
       - name: Upload test report
-        if: failure() && steps.run-tests.outcome=='failure'
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: test-report
@@ -55,10 +55,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Upload artefact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-files
       - name: List files
         run: ls -ahl
       - name: Deploy
@@ -66,7 +62,6 @@ jobs:
 
   report:
     needs: [lint, deploy]
-    if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Outputs information
