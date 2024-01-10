@@ -44,16 +44,23 @@ jobs:
         run: npm run test
       - name: Upload test report
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test-report
           path: test.json
       - name: Build project
         run: npm run build
+      - name: Upload project build
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
 
   deploy:
     needs: test
     uses: ./.github/workflows/reusable.yml
+    with:
+      artifacts-name: dist-files
 
   report:
     needs: [lint, deploy]
