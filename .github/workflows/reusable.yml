@@ -7,7 +7,13 @@ on:
        required: false
        type: string
        default: dist
+   outputs:
+     result:
+       description: Output from deploy reusable job
+       value: ${{ jobs.deploy.outputs.outcome }}
 jobs:
+  outputs:
+    outcome: ${{ steps.set-result.outputs.step-results }}
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -19,3 +25,5 @@ jobs:
         run: ls -alh
       - name: Deploy
         run: echo "Deploying ..."
+      - name: Set output
+        run: echo "step-result=success >> $GITHUB_OUTPUT"
